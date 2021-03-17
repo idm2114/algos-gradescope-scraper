@@ -74,21 +74,26 @@ def run_selenium():
 def main():
     # the script checks at a decreasing interval as we get 
     # closer to the day of class
-    tz = pytz.timezone('US/Eastern')
-    current = datetime.now(tz=tz)
-    if current.weekday() == 6 or current.weekday() == 1:
-        if current.hour <= 20: 
-            run_selenium()
-            time.sleep(3600)
+    while(1):
+        tz = pytz.timezone('US/Eastern')
+        current = datetime.now(tz=tz)
+        if current.weekday() == 6 or current.weekday() == 1:
+            if current.hour <= 20: 
+                run_selenium()
+                time.sleep(3600)
+            else:
+                run_selenium()
+                time.sleep(30 * 60)
+        elif current.weekday() == 0 or current.weekday() == 2:
+            if current.hour <= 10:
+                run_selenium()
+                time.sleep(5*60)
+            else:
+                print("class has passed")
+                time.sleep(3600)
         else:
-            run_selenium()
-            time.sleep(30 * 60)
-    elif current.weekday() == 0 or current.weekday() == 2:
-        if current.hour <= 10:
-            run_selenium()
-            time.sleep(5*60)
-    else:
-        time.sleep(3600)
+            print("waiting for day to be closer to class day...")
+            time.sleep(3600)
 
 if __name__ == '__main__':
     main() 

@@ -18,7 +18,7 @@ GRADESCOPE_USERNAME = ''
 GRADESCOPE_PASSWORD = ''
 ## this is currently hardcoded, would be much cooler if dynamic
 ## but having trouble parsing quizzes that are incomplete on selenium
-LAST_NUM_QUIZZES = 11
+
 
 ## note that this is designed for MAC OSX 
 ## could easily be modified to send emails with SMTP for windows users
@@ -29,16 +29,16 @@ def notify(title, text):
               osascript -e 'display notification "{}" with title "{}"'
               """.format(text, title))
 
-def run_selenium():
+def run_selenium(LAST_NUM_QUIZZES):
     #selenium #runs in background 
     driver=webdriver
     try:
         fireFoxOptions = webdriver.FirefoxOptions()
-        fireFoxOptions.set_headless()
+        #fireFoxOptions.set_headless()
         driver = webdriver.Firefox(options=fireFoxOptions)
     except:
         chrome_options = Options()
-        chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--headless")
         driver = webdriver.Chrome(options=chrome_options)
 
     driver.get("https://www.gradescope.com")
@@ -70,8 +70,10 @@ def run_selenium():
     time.sleep(5)
 
     driver.close()
+    return LAST_NUM_QUIZZES
 
 def main():
+    LAST_NUM_QUIZZES = 11
     # the script checks at a decreasing interval as we get 
     # closer to the day of class
     while(1):
@@ -79,14 +81,14 @@ def main():
         current = datetime.now(tz=tz)
         if current.weekday() == 6 or current.weekday() == 1:
             if current.hour <= 20: 
-                run_selenium()
+                LAST_NUM_QUIZZES = run_selenium(LAST_NUM_QUIZZES)
                 time.sleep(3600)
             else:
-                run_selenium()
+                LAST_NUM_QUIZZES = run_selenium(LAST_NUM_QUIZZES)
                 time.sleep(30 * 60)
         elif current.weekday() == 0 or current.weekday() == 2:
             if current.hour <= 10:
-                run_selenium()
+                LAST_NUM_QUIZZES = run_selenium(LAST_NUM_QUIZZES)
                 time.sleep(5*60)
             else:
                 print("class has passed")
